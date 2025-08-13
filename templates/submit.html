@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h2>Send a request</h2>
+    <p>Use this form to send requests</p>
+
+    <!-- Placeholder form - not functional yet -->
+    <form>
+        <div>
+            <label for="title">Request Title:</label>
+            <input type="text" id="title" name="title" placeholder="Write the title of your request" required>
+        </div>
+        
+        <div>
+            <label for="details">Details:</label>
+            <textarea id="details" name="details" placeholder="Describe the details of your request." rows="5" required></textarea>
+        </div>
+        
+        <button type="submit">Send it</button>
+    </form>
+</section>
+{% endblock %}
