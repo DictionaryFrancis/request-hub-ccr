@@ -15,7 +15,12 @@
             </ul>
             <ul>
                 <li><a href="/">Submit Request</a></li>
-                <li><a href="/admin">Admin</a></li>
+                {% if session.admin_logged_in %}
+                    <li><a href="/admin">Admin</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/login">Admin Login</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
