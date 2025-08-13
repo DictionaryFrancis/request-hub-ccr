@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h2>✅ Pedido enviado com sucesso!</h2>
+    
+    <div style="background-color: var(--pico-background-color); padding: 1rem; border-radius: 0.5rem; margin: 1rem 0;">
+        <p><strong>Thanks, {{ item.name }}!</strong></p>
+        <p>Your request "<strong>{{ item.title }}</strong>" was received {{ item.created_at.strftime('%d/%m/%Y às %H:%M') }}.</p>
+        <p>We are going to contact with you as soon as possible.</p>
+        
+        <h4>Details of the request:</h4>
+        <ul>
+            <li><strong>ID:</strong> #{{ item.id }}</li>
+            <li><strong>Priority:</strong> {{ item.priority.title() }}</li>
+            {% if item.contact %}
+            <li><strong>Contact:</strong> {{ item.contact }}</li>
+            {% endif %}
+        </ul>
+        
+        <details>
+            <summary>See details</summary>
+            <p>{{ item.details }}</p>
+        </details>
+    </div>
+    
+    <a href="/" role="button">Send another request</a>
+</section>
+{% endblock %}
