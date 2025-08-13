@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h2>🔧 Admin Dashboard</h2>
+    <p>Manage all incoming requests below.</p>
+    
+    {% if items %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>From</th>
+                        <th>Category</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td><strong>#{{ item.id }}</strong></td>
+                        <td>
+                            <strong>{{ item.title }}</strong>
+                            {% if item.details|length > 80 %}
+                                <br><small style="color: var(--pico-muted-color);">{{ item.details[:80] }}...</small>
+                            {% else %}
+                                <br><small style="color: var(--pico-muted-color);">{{ item.details }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ item.name }}
+                            {% if item.contact %}
+                                <br><small style="color: var(--pico-muted-color);">{{ item.contact }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.category or '-' }}</td>
+                        <td>
+                            <span class="priority-{{ item.priority }}">
+                                {% if item.priority == 'high' %}🔴 Alta
+                                {% elif item.priority == 'low' %}🟢 Baixa
+                                {% else %}🟡 Normal
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-{{ item.status }}">
+                                {% if item.status == 'new' %}🆕 New
+                                {% elif item.status == 'in_progress' %}⚙️ In Progress
+                                {% else %}✅ Done
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="/admin/{{ item.id }}" role="button" class="outline">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No requests found. <a href="/">Submit the first one!</a></p>
+    {% endif %}
+</section>
+
+<style>
+.priority-high { color: #d63384; font-weight: bold; }
+.priority-low { color: #198754; font-weight: bold; }
+.priority-normal { color: #fd7e14; font-weight: bold; }
+.status-new { color: #0d6efd; font-weight: bold; }
+.status-in_progress { color: #fd7e14; font-weight: bold; }
+.status-done { color: #198754; font-weight: bold; }
+</style>
+{% endblock %}

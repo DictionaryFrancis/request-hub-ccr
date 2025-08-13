@@ -76,6 +76,26 @@ def submit():
 
     return render_template("thanks.html", item=item)
 
+@app.route("/admin")
+def admin():
+    items = (RequestItem.query
+             .order_by(RequestItem.created_at.desc())
+             .all())
+    return render_template("admin.html", items=items)
+
+@app.route("/admin/<int:item_id>")
+def detail(item_id):
+    item = RequestItem.query.get_or_404(item_id)
+    return render_template("detail.html", item=item)
+
+@app.route("/admin/<int:item_id>/update", methods=["POST"])
+def update(item_id):
+    item = RequestItem.query.get_or_404(item_id)
+    item.status = request.form.get("status", item.status)
+    item.priority = request.form.get("priority", item.priority)
+    db.session.commit()
+    flash("Updated!", "success")
+    return redirect(url_for("detail", item_id=item.id))
 
 if __name__ == "__main__":
     app.run(debug=True)

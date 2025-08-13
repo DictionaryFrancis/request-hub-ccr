@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <div style="margin-bottom: 2rem;">
+        <a href="/admin" role="button" class="outline">← Back to Admin List</a>
+    </div>
+    
+    <h2>#{{ item.id }} — {{ item.title }}</h2>
+    
+    <div class="grid">
+        <!-- Request Information -->
+        <div>
+            <h3>Request Information</h3>
+            <div style="background-color: var(--pico-background-color); padding: 1rem; border-radius: 0.5rem;">
+                <p><strong>From:</strong> {{ item.name }}</p>
+                {% if item.contact %}
+                <p><strong>Contact:</strong> {{ item.contact }}</p>
+                {% endif %}
+                <p><strong>Category:</strong> {{ item.category or 'Not specified' }}</p>
+                <p><strong>Created:</strong> {{ item.created_at.strftime('%d/%m/%Y at %H:%M') }}</p>
+                <p><strong>Current Status:</strong> 
+                    <span class="status-{{ item.status }}">
+                        {% if item.status == 'new' %}🆕 New
+                        {% elif item.status == 'in_progress' %}⚙️ In Progress
+                        {% else %}✅ Done
+                        {% endif %}
+                    </span>
+                </p>
+                <p><strong>Current Priority:</strong> 
+                    <span class="priority-{{ item.priority }}">
+                        {% if item.priority == 'high' %}🔴 Alta
+                        {% elif item.priority == 'low' %}🟢 Baixa
+                        {% else %}🟡 Normal
+                        {% endif %}
+                    </span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Update Form -->
+        <div>
+            <h3>Update Request</h3>
+            <form method="post" action="/admin/{{ item.id }}/update">
+                <div>
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="new" {% if item.status == 'new' %}selected{% endif %}>🆕 New</option>
+                        <option value="in_progress" {% if item.status == 'in_progress' %}selected{% endif %}>⚙️ In Progress</option>
+                        <option value="done" {% if item.status == 'done' %}selected{% endif %}>✅ Done</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority">
+                        <option value="low" {% if item.priority == 'low' %}selected{% endif %}>🟢 Low</option>
+                        <option value="normal" {% if item.priority == 'normal' %}selected{% endif %}>🟡 Normal</option>
+                        <option value="high" {% if item.priority == 'high' %}selected{% endif %}>🔴 High</option>
+                    </select>
+                </div>
+                
+                <button type="submit">💾 Save Changes</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Request Details -->
+    <div style="margin-top: 2rem;">
+        <h3>Request Details</h3>
+        <div style="background-color: var(--pico-background-color); padding: 1rem; border-radius: 0.5rem;">
+            <pre style="white-space: pre-line; font-family: inherit; margin: 0;">{{ item.details }}</pre>
+        </div>
+    </div>
+</section>
+
+<style>
+.priority-high { color: #d63384; font-weight: bold; }
+.priority-low { color: #198754; font-weight: bold; }
+.priority-normal { color: #fd7e14; font-weight: bold; }
+.status-new { color: #0d6efd; font-weight: bold; }
+.status-in_progress { color: #fd7e14; font-weight: bold; }
+.status-done { color: #198754; font-weight: bold; }
+</style>
+{% endblock %}
