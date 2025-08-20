@@ -4,7 +4,61 @@
 <section>
     <h2>🔧 Admin Dashboard</h2>
     <p>Manage all incoming requests below.</p>
-    
+
+
+    <!-- Search and Filter Form -->
+    <div style="background-color: var(--pico-background-color); padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+        <form method="get">
+            <div class="grid">
+                <div>
+                    <label for="q">🔍 Search</label>
+                    <input type="search" id="q" name="q" value="{{ q }}" placeholder="Search in title, details, or name...">
+                </div>
+                <div>
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="new" {% if status == 'new' %}selected{% endif %}>🆕 New</option>
+                        <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>⚙️ In Progress</option>
+                        <option value="done" {% if status == 'done' %}selected{% endif %}>✅ Done</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority">
+                        <option value="">All Priorities</option>
+                        <option value="low" {% if priority == 'low' %}selected{% endif %}>🟢 Low</option>
+                        <option value="normal" {% if priority == 'normal' %}selected{% endif %}>🟡 Normal</option>
+                        <option value="high" {% if priority == 'high' %}selected{% endif %}>🔴 High</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem;">
+                <button type="submit">🔍 Filter</button>
+                <a href="/admin" role="button" class="outline">🗑️ Clear</a>
+                {% if q or status or priority or category %}
+                <small style="color: var(--pico-muted-color); margin-left: 1rem;">
+                    Showing filtered results
+                    {% if q %}for "{{ q }}"{% endif %}
+                    {% if status %}• Status: {{ status }}{% endif %}
+                    {% if priority %}• Priority: {{ priority }}{% endif %}
+                    {% if category %}• Category: {{ category }}{% endif %}
+                </small>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
     {% if items %}
         <div style="overflow-x: auto;">
             <table>

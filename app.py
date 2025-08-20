@@ -3,6 +3,7 @@ from datetime import datetime
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -129,10 +130,52 @@ def logout():
 @require_login
 def admin():
     try:
-        items = (RequestItem.query
-                 .order_by(RequestItem.created_at.desc())
-                 .all())
-        return render_template("admin.html", items=items)
+        # Get query parameters
+        q = request.args.get("q", "").strip()
+        status = request.args.get("status", "")
+        priority = request.args.get("priority", "")
+        category = request.args.get("category", "")
+
+        # Build query incrementally
+        query = RequestItem.query
+
+        # Text search across title, details, and name
+        if q:
+            like = f"%{q}%"
+            query = query.filter(
+                or_(
+                    RequestItem.title.ilike(like),
+                    RequestItem.details.ilike(like),
+                    RequestItem.name.ilike(like),
+                )
+            )
+
+        # Filter by status
+        if status:
+            query = query.filter_by(status=status)
+
+        # Filter by priority
+        if priority:
+            query = query.filter_by(priority=priority)
+
+        # Filter by category
+        if category:
+            query = query.filter_by(category=category)
+
+        # Execute query with ordering
+        items = query.order_by(RequestItem.created_at.desc()).all()
+
+        # Get distinct categories for dropdown (excluding None/empty)
+        categories = [c[0] for c in db.session.query(RequestItem.category).distinct().all() if c[0]]
+        categories.sort()  # Sort alphabetically
+
+        return render_template("admin.html",
+                             items=items,
+                             q=q,
+                             status=status,
+                             priority=priority,
+                             category=category,
+                             categories=categories)
     except Exception as e:
         return f"Error in admin route: {str(e)}"
 
