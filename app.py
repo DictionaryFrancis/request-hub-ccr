@@ -13,7 +13,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # Enable debug mode to see detailed errors
-app.config['DEBUG'] = True
+# app.config['DEBUG'] = True
+# app.config['DEBUG'] = os.getenv("FLASK_DEBUG", "0") == "1"
 
 # Database configuration
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -21,6 +22,22 @@ DB_PATH = os.path.join(BASE_DIR, "requests.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev-secret-change-me")
+
+# Safer cookies; set SESSION_COOKIE_SECURE=1 in production (HTTPS)
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE", "0") == "1",
+)
+
+# Prefer DATABASE_URL if provided by the host
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    # Render/Railway sometimes give 'postgres://'; SQLAlchemy expects 'postgresql+psycopg2://'
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+
 
 # Admin credentials from environment
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
@@ -197,4 +214,5 @@ def update(item_id):
 
 # Run the app only if this file is executed directly
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run()
